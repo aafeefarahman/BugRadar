@@ -1,8 +1,5 @@
 # BugRadar — AI-Based Predictive Bug Prediction System
 
-> **"Know which files will break before you ship"**  
-> An end-to-end full-stack AI system that mines Git commit history, extracts code churn and complexity metrics, and trains a hybrid Machine Learning & heuristic model to forecast file-level defect risks.
-
 ---
 
 ## Tech Stack
