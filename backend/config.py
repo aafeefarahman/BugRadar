@@ -6,24 +6,34 @@ class Settings(BaseSettings):
     PROJECT_VERSION: str = "1.0.0"
     API_V1_STR: str = "/api"
     
-    # Database
+    # Database URL (SQLite default, or PostgreSQL on Render/Supabase)
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./bugradar.db")
     
-    # JWT Security
+    # Secret Key
     SECRET_KEY: str = os.getenv("SECRET_KEY", "bugradar-super-secret-production-key-2026-xyz987")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
     # Cache settings
-    CACHE_TTL_SECONDS: int = 3600  # 1 hour analysis cache
+    CACHE_TTL_SECONDS: int = int(os.getenv("CACHE_TTL_SECONDS", "3600"))  # 1 hour analysis cache
     
-    # CORS
-    BACKEND_CORS_ORIGINS: list[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-        "*"
-    ]
+    # CORS Origins
+    @property
+    def BACKEND_CORS_ORIGINS(self) -> list[str]:
+        custom_origins = os.getenv("CORS_ORIGINS")
+        if custom_origins:
+            # Parse comma-separated list of origins
+            origins = [origin.strip() for origin in custom_origins.split(",") if origin.strip()]
+            if "https://bug-radar-dusky.vercel.app" not in origins:
+                origins.append("https://bug-radar-dusky.vercel.app")
+            return origins
+        return [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000",
+            "https://bug-radar-dusky.vercel.app",
+            "*"
+        ]
 
 settings = Settings()

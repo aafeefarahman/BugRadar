@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api` 
+  : '/api';
 
 export async function analyzeRepository(repoUrl, githubToken = null, useSample = false, maxCommits = 200) {
   const response = await fetch(`${API_BASE}/analysis/analyze`, {
