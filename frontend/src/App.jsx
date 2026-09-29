@@ -9,7 +9,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('landing'); // 'landing', 'connect', 'dashboard'
   const [darkMode, setDarkMode] = useState(true);
   const [analysisData, setAnalysisData] = useState(null);
-  const [sessionToken, setSessionToken] = useState('');
 
   // Update theme class on HTML element
   useEffect(() => {
@@ -64,8 +63,6 @@ export default function App() {
             <ConnectRepo
               onAnalysisComplete={handleAnalysisComplete}
               darkMode={darkMode}
-              sessionToken={sessionToken}
-              setSessionToken={setSessionToken}
             />
           )}
 

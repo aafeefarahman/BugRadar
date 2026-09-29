@@ -4,6 +4,10 @@ import httpx
 from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any, Tuple, Optional
 from fastapi import HTTPException
+try:
+    from config import settings
+except ImportError:
+    from backend.config import settings
 
 def parse_github_repo_url(url: str) -> Tuple[str, str]:
     """
@@ -53,10 +57,10 @@ async def fetch_github_repo_commits(
         "User-Agent": "BugRadar-AI-Scanner/1.0"
     }
     
-    # Ephemeral token passed in memory for this session/call only
-    if token and token.strip():
-        clean_token = token.strip()
-        headers["Authorization"] = f"Bearer {clean_token}"
+    # Use supplied token or default to settings.GITHUB_TOKEN
+    effective_token = token.strip() if (token and token.strip()) else settings.GITHUB_TOKEN
+    if effective_token and effective_token.strip():
+        headers["Authorization"] = f"Bearer {effective_token.strip()}"
 
     base_url = f"https://api.github.com/repos/{owner}/{repo}"
     

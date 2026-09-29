@@ -59,28 +59,30 @@ export default function TreemapHeatmap({ files, onSelectFile, selectedFilePath, 
       darkMode ? 'bg-gray-900/80 border-gray-800' : 'bg-white border-gray-200 shadow-sm'
     }`}>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-gray-800/80">
+      <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 mb-5 border-b ${
+        darkMode ? 'border-gray-800/80' : 'border-gray-200'
+      }`}>
         <div>
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-orange-400" />
-            <h3 className="text-lg font-bold tracking-tight">Codebase Risk Heatmap & Treemap</h3>
+            <h3 className={`text-lg font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>Codebase Risk Heatmap & Treemap</h3>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className={`text-xs mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Tile size reflects lines of code/weight; color intensity indicates AI bug probability.
           </p>
         </div>
 
         {/* Legend */}
         <div className="flex items-center gap-2 text-xs font-mono">
-          <span className="text-gray-400">Risk Scale:</span>
+          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Risk Scale:</span>
           <div className="flex items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 text-[10px]">
               &lt; 35% Safe
             </span>
-            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px]">
               35-65% Med
             </span>
-            <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-500 border border-red-500/30 text-[10px]">
               &gt; 65% Critical
             </span>
           </div>
@@ -146,19 +148,19 @@ export default function TreemapHeatmap({ files, onSelectFile, selectedFilePath, 
             }`}>
               <div className="flex items-center gap-2.5">
                 <FileCode className="w-4 h-4 text-cyan-400 shrink-0" />
-                <span className="font-bold text-sm text-cyan-300 truncate">{active.file_path}</span>
+                <span className="font-bold text-sm text-cyan-500 truncate">{active.file_path}</span>
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                  active.risk_level === 'HIGH' ? 'bg-red-500/20 text-red-300' :
-                  active.risk_level === 'MEDIUM' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
+                  active.risk_level === 'HIGH' ? 'bg-red-500/20 text-red-500' :
+                  active.risk_level === 'MEDIUM' ? 'bg-amber-500/20 text-amber-500' : 'bg-emerald-500/20 text-emerald-500'
                 }`}>
                   {active.risk_level} RISK ({active.risk_score}%)
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-4 text-[11px] text-gray-400">
-                <span>Bug Commits: <strong className="text-white">{active.bug_fix_commits}</strong> / {active.total_commits}</span>
-                <span>Avg Churn: <strong className="text-white">{active.lines_churn_avg}</strong> lines</span>
-                <span>Authors: <strong className="text-white">{active.unique_authors}</strong></span>
-                <span>Complexity: <strong className="text-white">{active.complexity_proxy}</strong></span>
+              <div className={`flex flex-wrap items-center gap-4 text-[11px] ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <span>Bug Commits: <strong className={darkMode ? 'text-white' : 'text-gray-900'}>{active.bug_fix_commits}</strong> / {active.total_commits}</span>
+                <span>Avg Churn: <strong className={darkMode ? 'text-white' : 'text-gray-900'}>{active.lines_churn_avg}</strong> lines</span>
+                <span>Authors: <strong className={darkMode ? 'text-white' : 'text-gray-900'}>{active.unique_authors}</strong></span>
+                <span>Complexity: <strong className={darkMode ? 'text-white' : 'text-gray-900'}>{active.complexity_proxy}</strong></span>
               </div>
             </div>
           );

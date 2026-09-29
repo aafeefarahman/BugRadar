@@ -10,6 +10,7 @@ import schemas
 from services.github_service import parse_github_repo_url, fetch_github_repo_commits, generate_sample_demo_repository
 from services.feature_extractor import extract_file_features, is_bug_fixing_commit
 from services.ml_engine import train_and_predict_risks
+from services.ai_advisor import enrich_risks_with_ai_suggestions
 from services.cache_service import analysis_cache
 
 router = APIRouter(prefix="/analysis", tags=["Repository Analysis"])
@@ -74,6 +75,13 @@ async def analyze_repository(
 
     # 5. Machine Learning & Rule-based Scoring Engine
     file_risks, model_metadata = train_and_predict_risks(file_features)
+
+    # 5.1 AI-Powered Actionable Fix Suggestions (Top 3-5 Riskiest Files)
+    try:
+        file_risks = await enrich_risks_with_ai_suggestions(file_risks, top_n=5)
+    except Exception as e:
+        # Non-blocking graceful degradation
+        pass
 
     # 6. Aggregate Summary Metrics
     total_commits = len(raw_commits)

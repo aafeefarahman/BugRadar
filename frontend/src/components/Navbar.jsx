@@ -34,7 +34,7 @@ export default function Navbar({
               className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
                 activeTab === 'landing'
                   ? darkMode ? 'bg-gray-800 text-white shadow-sm' : 'bg-gray-100 text-gray-900 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/40'
+                  : darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/40' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               Overview
@@ -45,7 +45,7 @@ export default function Navbar({
               className={`px-3.5 py-2 rounded-xl text-sm font-medium flex items-center gap-1.5 transition-all ${
                 activeTab === 'connect'
                   ? darkMode ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-cyan-50 text-cyan-700 border border-cyan-200'
-                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/40'
+                  : darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/40' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <GithubIcon className="w-4 h-4" />
@@ -57,7 +57,7 @@ export default function Navbar({
               className={`px-3.5 py-2 rounded-xl text-sm font-medium flex items-center gap-1.5 transition-all ${
                 activeTab === 'dashboard'
                   ? darkMode ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/40'
+                  : darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/40' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <ShieldAlert className="w-4 h-4 text-orange-400" />

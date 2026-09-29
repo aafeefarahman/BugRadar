@@ -25,6 +25,7 @@ class FileRiskSummary(BaseModel):
     lines_of_code: int
     top_reasons: List[str]
     file_type: str
+    fix_suggestion: Optional[str] = None
 
 class AnalysisSummary(BaseModel):
     total_files: int

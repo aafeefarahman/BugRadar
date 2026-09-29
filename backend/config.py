@@ -10,9 +10,15 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./bugradar.db")
     
     # Secret Key
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "bugradar-super-secret-production-key-2026-xyz987")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    
+    # Gemini AI API Key
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    
+    # GitHub Personal Access Token (Automatic default/fallback)
+    GITHUB_TOKEN: str = os.getenv("GITHUB_TOKEN", "")
     
     # Cache settings
     CACHE_TTL_SECONDS: int = int(os.getenv("CACHE_TTL_SECONDS", "3600"))  # 1 hour analysis cache
@@ -22,7 +28,6 @@ class Settings(BaseSettings):
     def BACKEND_CORS_ORIGINS(self) -> list[str]:
         custom_origins = os.getenv("CORS_ORIGINS")
         if custom_origins:
-            # Parse comma-separated list of origins
             origins = [origin.strip() for origin in custom_origins.split(",") if origin.strip()]
             if "https://bug-radar-dusky.vercel.app" not in origins:
                 origins.append("https://bug-radar-dusky.vercel.app")
