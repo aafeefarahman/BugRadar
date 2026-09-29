@@ -76,9 +76,9 @@ async def analyze_repository(
     # 5. Machine Learning & Rule-based Scoring Engine
     file_risks, model_metadata = train_and_predict_risks(file_features)
 
-    # 5.1 AI-Powered Actionable Fix Suggestions (Top 3-5 Riskiest Files)
+    # 5.1 AI-Powered Actionable Fix Suggestions (Risk >= 0.55, capped at 12 files)
     try:
-        file_risks = await enrich_risks_with_ai_suggestions(file_risks, top_n=5)
+        file_risks = await enrich_risks_with_ai_suggestions(file_risks, min_risk_threshold=0.55, max_files=12)
     except Exception as e:
         # Non-blocking graceful degradation
         pass

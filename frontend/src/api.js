@@ -1,6 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : '/api';
+const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE = RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/$/, '')}/api`;
 
 export async function analyzeRepository(repoUrl, githubToken = null, useSample = false, maxCommits = 200) {
   const response = await fetch(`${API_BASE}/analysis/analyze`, {

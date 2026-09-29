@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 *.db
 .env
+.env*.local
+node_modules/
+dist/

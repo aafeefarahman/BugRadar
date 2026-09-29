@@ -91,29 +91,44 @@ Keep each line under 20 words. Be concrete and specific to this file type, not g
 
     return _generate_domain_fallback(filename, risk_factors_summary)
 
-async def enrich_risks_with_ai_suggestions(file_risks: List[Dict[str, Any]], top_n: int = 5) -> List[Dict[str, Any]]:
+async def enrich_risks_with_ai_suggestions(
+    file_risks: List[Dict[str, Any]], 
+    min_risk_threshold: float = 0.55, 
+    max_files: int = 12
+) -> List[Dict[str, Any]]:
     """
-    Takes the top 3-5 riskiest files and generates AI suggestions asynchronously.
+    Generates remediation for every file with risk >= 0.55 (55%), capped at 12 files.
+    Skips documentation and non-code files (.md, .rst, .txt).
     """
     if not file_risks:
         return file_risks
 
-    count_to_enrich = min(top_n, len(file_risks))
+    skip_exts = (".md", ".rst", ".txt")
     tasks = []
-    top_indices = []
+    target_indices = []
 
-    for i in range(count_to_enrich):
-        file_obj = file_risks[i]
-        filename = file_obj.get("file_path", "unknown")
-        reasons = file_obj.get("top_reasons", [])
-        risk_factors_summary = ", ".join(reasons) if reasons else f"Risk Score {file_obj.get('risk_score', 0)}% with high code churn and frequent revisions"
-        
-        top_indices.append(i)
-        tasks.append(generate_file_fix_suggestion(filename, risk_factors_summary))
+    for idx, file_obj in enumerate(file_risks):
+        if len(target_indices) >= max_files:
+            break
+
+        filename = file_obj.get("file_path", "")
+        if any(filename.lower().endswith(ext) for ext in skip_exts):
+            continue
+
+        risk_score = file_obj.get("risk_score", 0.0)
+        ml_prob = file_obj.get("ml_probability", 0.0)
+
+        # Check if risk >= 0.55 (scale 0-1) or >= 55.0 (scale 0-100)
+        if risk_score >= (min_risk_threshold * 100) or ml_prob >= min_risk_threshold:
+            reasons = file_obj.get("top_reasons", [])
+            risk_factors_summary = ", ".join(reasons) if reasons else f"Risk Score {risk_score}% with elevated code churn and complexity"
+            
+            target_indices.append(idx)
+            tasks.append(generate_file_fix_suggestion(filename, risk_factors_summary))
 
     if tasks:
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        for idx, result in zip(top_indices, results):
+        for idx, result in zip(target_indices, results):
             if isinstance(result, str) and result:
                 file_risks[idx]["fix_suggestion"] = result
             else:
@@ -121,9 +136,9 @@ async def enrich_risks_with_ai_suggestions(file_risks: List[Dict[str, Any]], top
                 reasons = ", ".join(file_risks[idx].get("top_reasons", []))
                 file_risks[idx]["fix_suggestion"] = _generate_domain_fallback(filename, reasons)
 
-    # For files beyond top_n, set fix_suggestion to None
-    for i in range(count_to_enrich, len(file_risks)):
-        if "fix_suggestion" not in file_risks[i]:
-            file_risks[i]["fix_suggestion"] = None
+    # For files not selected, ensure fix_suggestion is None
+    for idx, file_obj in enumerate(file_risks):
+        if idx not in target_indices:
+            file_obj["fix_suggestion"] = None
 
     return file_risks

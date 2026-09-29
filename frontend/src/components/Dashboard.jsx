@@ -525,42 +525,51 @@ export default function Dashboard({ analysisData, onAnalysisComplete, onNewScan,
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {files.filter(f => f.fix_suggestion).slice(0, 3).map((f) => (
-              <div 
-                key={f.file_path}
-                onClick={() => {
-                  setExpandedFile(f.file_path);
-                  setSelectedHeatmapFile(f.file_path);
-                }}
-                className={`p-4 rounded-2xl border cursor-pointer transition-all space-y-3 flex flex-col justify-between ${
-                  darkMode 
-                    ? 'bg-gray-950/60 border-gray-800 hover:bg-gray-900/80 hover:border-purple-500/60' 
-                    : 'bg-white border-gray-200 hover:bg-purple-50/30 hover:border-purple-300 shadow-sm'
-                }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-2 pb-1 border-b border-gray-800/40">
-                    <span className={`font-mono text-xs font-bold truncate ${darkMode ? 'text-gray-200' : 'text-gray-900'}`} title={f.file_path}>
-                      {f.file_path}
-                    </span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 shrink-0">
-                      {f.risk_score}%
-                    </span>
+          {/* Scrollable Card Grid Container */}
+          <div 
+            className="max-h-[640px] overflow-y-auto pr-1.5"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: darkMode ? '#a855f7 transparent' : '#c084fc transparent'
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {files.filter(f => f.fix_suggestion).map((f) => (
+                <div 
+                  key={f.file_path}
+                  onClick={() => {
+                    setExpandedFile(f.file_path);
+                    setSelectedHeatmapFile(f.file_path);
+                  }}
+                  className={`p-4 rounded-2xl border cursor-pointer transition-all space-y-3 flex flex-col justify-between ${
+                    darkMode 
+                      ? 'bg-gray-950/60 border-gray-800 hover:bg-gray-900/80 hover:border-purple-500/60' 
+                      : 'bg-white border-gray-200 hover:bg-purple-50/30 hover:border-purple-300 shadow-sm'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2 pb-1 border-b border-gray-800/40">
+                      <span className={`font-mono text-xs font-bold truncate ${darkMode ? 'text-gray-200' : 'text-gray-900'}`} title={f.file_path}>
+                        {f.file_path}
+                      </span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 shrink-0">
+                        {f.risk_score}%
+                      </span>
+                    </div>
+                    
+                    {/* Formatted Bullets */}
+                    <RemediationBullets text={f.fix_suggestion} darkMode={darkMode} />
                   </div>
-                  
-                  {/* Formatted Bullets */}
-                  <RemediationBullets text={f.fix_suggestion} darkMode={darkMode} />
-                </div>
 
-                <div className={`text-[11px] font-semibold pt-1 flex items-center gap-1 ${
-                  darkMode ? 'text-purple-400' : 'text-purple-700'
-                }`}>
-                  <span>View file breakdown</span>
-                  <ChevronRight className="w-3 h-3" />
+                  <div className={`text-[11px] font-semibold pt-1 flex items-center gap-1 ${
+                    darkMode ? 'text-purple-400' : 'text-purple-700'
+                  }`}>
+                    <span>View file breakdown</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       )}
