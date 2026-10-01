@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 def _get_database_url() -> str:
     url = os.getenv("DATABASE_URL", "sqlite:///./bugradar.db")
     if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
+        url = url.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
     return url
 
 class Settings(BaseSettings):
