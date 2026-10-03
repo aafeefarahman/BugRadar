@@ -85,3 +85,60 @@ def test_badge_svg_generation():
     assert "bug risk" in svg
     assert "42% medium" in svg
     assert "#f59e0b" in svg
+
+def test_parse_github_repo_url_strip_query_and_fragments():
+    """Verify query strings and fragments are stripped from repo URLs."""
+    from services.github_service import parse_github_repo_url
+    
+    # URL with query parameters
+    owner, repo = parse_github_repo_url("https://github.com/fastapi/fastapi?tab=readme-ov-file")
+    assert owner == "fastapi" and repo == "fastapi"
+    
+    # URL with hash fragment
+    owner, repo = parse_github_repo_url("https://github.com/facebook/react#installation")
+    assert owner == "facebook" and repo == "react"
+    
+    # URL with both query string and fragment
+    owner, repo = parse_github_repo_url("https://github.com/tiangolo/sqlmodel?query=1#readme")
+    assert owner == "tiangolo" and repo == "sqlmodel"
+    
+    # URL with .git and query string
+    owner, repo = parse_github_repo_url("https://github.com/psf/requests.git?utm_source=test#top")
+    assert owner == "psf" and repo == "requests"
+    
+    # Shorthand with query and fragment
+    owner, repo = parse_github_repo_url("pallets/flask?branch=main#code")
+    assert owner == "pallets" and repo == "flask"
+
+def test_cors_regex_and_localhost():
+    """Verify CORS allows localhost and regex-matching vercel preview domains."""
+    from fastapi.testclient import TestClient
+    from main import app
+    
+    client = TestClient(app)
+    
+    # 1. Localhost origin should be allowed
+    res_local = client.get("/health", headers={"Origin": "http://localhost:5173"})
+    assert res_local.status_code == 200
+    assert res_local.headers.get("access-control-allow-origin") == "http://localhost:5173"
+    assert res_local.headers.get("access-control-allow-credentials") == "true"
+    
+    # 2. Matching Vercel regex origin should be allowed
+    res_vercel_preview = client.get("/health", headers={"Origin": "https://bug-radar-preview-abc.vercel.app"})
+    assert res_vercel_preview.status_code == 200
+    assert res_vercel_preview.headers.get("access-control-allow-origin") == "https://bug-radar-preview-abc.vercel.app"
+    assert res_vercel_preview.headers.get("access-control-allow-credentials") == "true"
+    
+    res_vercel_git = client.get("/health", headers={"Origin": "https://bug-radar-git-feature-branch.vercel.app"})
+    assert res_vercel_git.status_code == 200
+    assert res_vercel_git.headers.get("access-control-allow-origin") == "https://bug-radar-git-feature-branch.vercel.app"
+    
+    # 3. Non-matching origins should NOT be allowed
+    res_disallowed = client.get("/health", headers={"Origin": "https://other-app.vercel.app"})
+    assert res_disallowed.status_code == 200
+    assert "access-control-allow-origin" not in res_disallowed.headers
+    
+    res_spoof = client.get("/health", headers={"Origin": "https://bug-radar-preview.vercel.app.attacker.com"})
+    assert res_spoof.status_code == 200
+    assert "access-control-allow-origin" not in res_spoof.headers
+

@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     # Cache settings
     CACHE_TTL_SECONDS: int = int(os.getenv("CACHE_TTL_SECONDS", "3600"))  # 1 hour analysis cache
     
+    # CORS Settings
+    CORS_ORIGIN_REGEX: str = r"^https://bug-radar-.*\.vercel\.app$"
+    
     # CORS Origins
     @property
     def BACKEND_CORS_ORIGINS(self) -> list[str]:

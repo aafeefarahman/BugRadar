@@ -17,7 +17,9 @@ def parse_github_repo_url(url: str) -> Tuple[str, str]:
     - github.com/fastapi/fastapi/
     - fastapi/fastapi
     """
-    clean = url.strip().rstrip("/")
+    clean = url.strip()
+    # Strip query strings and fragments (anything after "?" or "#")
+    clean = re.split(r'[?#]', clean, maxsplit=1)[0].strip().rstrip("/")
     if clean.endswith(".git"):
         clean = clean[:-4]
     
