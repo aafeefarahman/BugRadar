@@ -2,7 +2,7 @@
 
 BugRadar is an open-source, full-stack predictive software quality platform. It mines Git repositories, extracts code churn and cyclomatic complexity proxies, applies temporal splits to reduce lookahead bias, trains balanced multi-model machine learning ensembles, and delivers Gemini AI-powered actionable remediation guidance.
 
-## 🚀 Key Features
+## Key Features
 
 1. **Machine Learning Rigor (Reduced Lookahead Bias)**
    - **Temporal Split (70/30)**: Features are computed exclusively from the oldest 70% of commits, and defect labels are derived from the newest 30% window to reduce lookahead bias.
@@ -25,67 +25,13 @@ BugRadar is an open-source, full-stack predictive software quality platform. It 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React 19, Vite, Tailwind CSS, Recharts, Lucide Icons.
 - **Backend**: FastAPI (Python 3.10+), Pydantic v2, SQLAlchemy, Uvicorn, Httpx.
 - **Machine Learning**: `scikit-learn` (`RandomForestClassifier`, `LogisticRegression`, `GradientBoostingClassifier`), NumPy, Pandas.
 - **AI Remediation**: Google Gemini AI (`google-generativeai`).
 - **Database**: SQLite (default for local development), PostgreSQL via `DATABASE_URL` for production.
-
----
-
-## ⚙️ Environment Variables
-
-Create a `backend/.env` file (refer to `backend/.env.example`):
-
-```bash
-# GitHub Personal Access Token (Raises API rate limits from 60 to 5,000 req/hr)
-GITHUB_TOKEN=your_github_token_here
-
-# Google Gemini API Key (For automated AI code fix remediation)
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Database Connection (Default SQLite for local dev, PostgreSQL for production)
-DATABASE_URL=sqlite:///./bugradar.db
-
-# JWT Secret Key
-SECRET_KEY=your_random_secret_key_here
-```
-
----
-
-## 💻 Local Setup Instructions
-
-### 1. Backend Setup
-
-```bash
-cd backend
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-
-pip install -r requirements.txt
-python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
-```
-Interactive API documentation will be available at `http://127.0.0.1:8000/docs`.
-
-### 2. Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open `http://localhost:5173` in your browser.
-
-### 3. Run Automated Pytest Suite
-
-```bash
-pytest backend/tests
-```
 
 ---
 
