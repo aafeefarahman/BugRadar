@@ -2,16 +2,7 @@
 
 BugRadar is an open-source, full-stack predictive software quality platform. It mines Git repositories, extracts code churn and cyclomatic complexity proxies, applies temporal splits to reduce lookahead bias, trains balanced multi-model machine learning ensembles, and delivers Gemini AI-powered actionable remediation guidance.
 
----
-
-## 📐 Architecture & Pipeline
-
-```mermaid
-flowchart TD
-    A[GitHub Repository / Public URL] --> B[Git Commit Mining & REST API]
-    B --> C[Temporal Split Engine: 70% Past / 30% Future]
-    
-    subgraph Feature Extraction [Historical 70% Window]
+-
         C --> D1[Code Churn: Additions + Deletions]
         C --> D2[Cyclomatic Complexity Proxy: Control-Flow Density]
         C --> D3[Author Dispersion & Developer Turnover]
