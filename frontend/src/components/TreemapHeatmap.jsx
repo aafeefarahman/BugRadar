@@ -68,7 +68,7 @@ export default function TreemapHeatmap({ files, onSelectFile, selectedFilePath, 
             <h3 className={`text-lg font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>Codebase Risk Heatmap & Treemap</h3>
           </div>
           <p className={`text-xs mt-0.5 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Tile size reflects lines of code/weight; color intensity indicates AI bug probability.
+            Color intensity indicates risk
           </p>
         </div>
 

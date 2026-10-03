@@ -3,7 +3,11 @@ import logging
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-load_dotenv()
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+if os.path.exists(env_path):
+    load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +28,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = _get_database_url()
     
     # Secret Key
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "bugradar_dev_secret")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
@@ -42,27 +46,26 @@ class Settings(BaseSettings):
     def BACKEND_CORS_ORIGINS(self) -> list[str]:
         origins = [
             "http://localhost:5173",
-            "http://127.0.0.1:5173"
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000"
         ]
-        frontend_url = os.getenv("FRONTEND_URL")
-        if frontend_url:
-            for item in frontend_url.split(","):
-                clean = item.strip().rstrip("/")
-                if clean and clean not in origins:
-                    origins.append(clean)
-        cors_origins = os.getenv("CORS_ORIGINS")
-        if cors_origins:
-            for item in cors_origins.split(","):
-                clean = item.strip().rstrip("/")
-                if clean and clean not in origins:
-                    origins.append(clean)
+        # Check FRONTEND_ORIGINS, FRONTEND_URL, and CORS_ORIGINS
+        for env_key in ["FRONTEND_ORIGINS", "FRONTEND_URL", "CORS_ORIGINS"]:
+            val = os.getenv(env_key)
+            if val:
+                for item in val.split(","):
+                    clean = item.strip().rstrip("/")
+                    if clean and clean not in origins and clean != "*":
+                        origins.append(clean)
         return origins
 
 settings = Settings()
 
-if not settings.SECRET_KEY:
-    logger.warning("SECRET_KEY environment variable is not set or empty.")
-if not settings.GEMINI_API_KEY:
-    logger.warning("GEMINI_API_KEY environment variable is not set or empty.")
 if not settings.GITHUB_TOKEN:
-    logger.warning("GITHUB_TOKEN environment variable is not set or empty.")
+    logger.warning("GITHUB_TOKEN not set: limited to 60 requests/hour from GitHub API.")
+if not settings.GEMINI_API_KEY:
+    logger.info("GEMINI_API_KEY not set: AI remediation will use built-in domain heuristics.")
+if "sqlite" in settings.DATABASE_URL.lower():
+    logger.info("DATABASE_URL using local SQLite storage.")
+

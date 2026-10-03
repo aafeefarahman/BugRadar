@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from database import engine, Base
-import models
-from routers import analysis_router
+from routers import analysis_router, reports_router, badge_router
 
 # Create database tables automatically
 Base.metadata.create_all(bind=engine)
@@ -24,8 +23,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include Analysis Router
+# Include Routers
 app.include_router(analysis_router.router, prefix=settings.API_V1_STR)
+app.include_router(reports_router.router, prefix=settings.API_V1_STR)
+app.include_router(badge_router.router)
 
 @app.get("/")
 def root():

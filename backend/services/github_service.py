@@ -47,10 +47,11 @@ async def fetch_github_repo_commits(
     repo: str,
     token: Optional[str] = None,
     max_commits: int = 200
-) -> List[Dict[str, Any]]:
+) -> Tuple[List[Dict[str, Any]], Optional[int], Optional[int]]:
     """
     Fetches commit history and file diffs using GitHub REST API.
     Handles rate limits, pagination, and token authentication.
+    Returns (parsed_commits, rate_limit_remaining, rate_limit_limit).
     """
     headers = {
         "Accept": "application/vnd.github.v3+json",
@@ -63,6 +64,8 @@ async def fetch_github_repo_commits(
         headers["Authorization"] = f"Bearer {effective_token.strip()}"
 
     base_url = f"https://api.github.com/repos/{owner}/{repo}"
+    rate_limit_remaining = None
+    rate_limit_limit = None
     
     async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
         # 1. Verify repository existence & accessibility
@@ -74,22 +77,33 @@ async def fetch_github_repo_commits(
                 detail=f"Network error connecting to GitHub API: {str(e)}"
             )
 
+        if "x-ratelimit-remaining" in repo_res.headers:
+            try:
+                rate_limit_remaining = int(repo_res.headers.get("x-ratelimit-remaining"))
+            except Exception:
+                pass
+        if "x-ratelimit-limit" in repo_res.headers:
+            try:
+                rate_limit_limit = int(repo_res.headers.get("x-ratelimit-limit"))
+            except Exception:
+                pass
+
         if repo_res.status_code == 404:
             raise HTTPException(
                 status_code=404,
-                detail=f"Repository '{owner}/{repo}' not found. Verify that the repository is public or supply a Personal Access Token with repository access."
+                detail=f"Repository '{owner}/{repo}' not found. Please verify that the repository exists and is public."
             )
         elif repo_res.status_code == 401:
             raise HTTPException(
                 status_code=401,
-                detail="GitHub authentication failed. Please verify your Personal Access Token."
+                detail="GitHub authentication failed. Please verify server GITHUB_TOKEN configuration."
             )
         elif repo_res.status_code == 403:
-            msg = repo_res.json().get("message", "")
-            if "rate limit" in msg.lower():
+            msg = repo_res.json().get("message", "") if repo_res.text.startswith("{") else repo_res.text
+            if "rate limit" in str(msg).lower():
                 raise HTTPException(
                     status_code=429,
-                    detail="GitHub API hourly rate limit reached (60 req/hr unauthenticated). Please provide a Personal Access Token (PAT) in the Connect Repo tab to unlock 5,000 req/hr or try the built-in sample demo."
+                    detail="GitHub rate limit reached. Please try again later or run the instant demo."
                 )
             raise HTTPException(
                 status_code=403,
@@ -111,6 +125,12 @@ async def fetch_github_repo_commits(
             commits_url = f"{base_url}/commits?per_page={per_page}&page={page}"
             res = await client.get(commits_url, headers=headers)
             
+            if "x-ratelimit-remaining" in res.headers:
+                try:
+                    rate_limit_remaining = int(res.headers.get("x-ratelimit-remaining"))
+                except Exception:
+                    pass
+
             if res.status_code != 200:
                 break
             
@@ -133,9 +153,7 @@ async def fetch_github_repo_commits(
         commits_list = commits_list[:total_needed]
 
         # 3. For detailed file changes, fetch individual commit details
-        # To avoid burning 200 separate API calls if unauthenticated,
-        # we batch inspect recent commits (or up to 40 detailed diffs if unauthenticated, 150 if token provided)
-        detailed_limit = 120 if token else 30
+        detailed_limit = 120 if (effective_token and effective_token.strip()) else 30
         commits_to_inspect = commits_list[:detailed_limit]
 
         parsed_commits = []
@@ -171,7 +189,7 @@ async def fetch_github_repo_commits(
                 "files": files_changed
             })
 
-        return parsed_commits
+        return parsed_commits, rate_limit_remaining, rate_limit_limit
 
 def generate_sample_demo_repository(owner: str, repo: str) -> List[Dict[str, Any]]:
     """

@@ -1,55 +1,136 @@
-# BugRadar — AI-Based Predictive Bug Prediction System
+# 🛡️ BugRadar — Predictive Software Defect Radar & Risk Intelligence
+
+BugRadar is an open-source, full-stack predictive software quality platform. It mines Git repositories, extracts code churn and cyclomatic complexity proxies, applies temporal splits to reduce lookahead bias, trains balanced multi-model machine learning ensembles, and delivers Gemini AI-powered actionable remediation guidance.
 
 ---
 
-## Tech Stack
+## 📐 Architecture & Pipeline
 
-- **Frontend**: React 19, Vite, Tailwind CSS v4, Lucide Icons, Custom Interactive Risk Treemap / Heatmap visualizer.
+```mermaid
+flowchart TD
+    A[GitHub Repository / Public URL] --> B[Git Commit Mining & REST API]
+    B --> C[Temporal Split Engine: 70% Past / 30% Future]
+    
+    subgraph Feature Extraction [Historical 70% Window]
+        C --> D1[Code Churn: Additions + Deletions]
+        C --> D2[Cyclomatic Complexity Proxy: Control-Flow Density]
+        C --> D3[Author Dispersion & Developer Turnover]
+        C --> D4[Touch Frequency & Recency]
+    end
+
+    subgraph Label Extraction [Future 30% Window]
+        C --> E1[Weak Supervision Regex: fix|bug|patch|defect]
+        E1 --> E2[Ground Truth Defect Labels y in 0, 1]
+    end
+
+    Feature Extraction & Label Extraction --> F[Balanced ML Ensemble Training]
+    
+    subgraph ML Rigor & Validation
+        F --> G1[Random Forest Classifier]
+        F --> G2[Logistic Regression Pipeline]
+        F --> G3[Gradient Boosting Classifier]
+        F --> G4[Naive Churn-Only Baseline]
+        G1 & G2 & G3 & G4 --> H[Stratified 5-Fold Out-of-Fold Cross Validation]
+        H --> I[ROC Curves, PR Curves & Confusion Matrix]
+    end
+
+    F --> J[Adaptive Bayesian Risk Blender]
+    J --> K[Interactive Live Radar, Treemap & Scatter Chart]
+    J --> L[Google Gemini AI Code Remediation Engine]
+    J --> M[Public Read-Only Shareable Reports & Status Badges]
+```
+
+---
+
+## 🚀 Key Features
+
+1. **Machine Learning Rigor (Reduced Lookahead Bias)**
+   - **Temporal Split (70/30)**: Features are computed exclusively from the oldest 70% of commits, and defect labels are derived from the newest 30% window to reduce lookahead bias.
+   - **Ensemble Benchmarking**: Random Forest, Logistic Regression, Gradient Boosting, and a Naive Churn baseline.
+   - **Honest Out-of-Fold Evaluation**: Precision, Recall, F1, ROC-AUC, and Confusion Matrix ($TN/FP/FN/TP$) calculated from out-of-fold predictions.
+   - **Small-Sample Safeguard**: Warns and gracefully falls back when positive defect labels are fewer than 10.
+
+2. **Visual Analytics with Recharts**
+   - **Scatter Plot**: Churn ($X$) vs. Complexity ($Y$) with dot color = risk tier and dot size = LOC. Click opens the file detail drawer.
+   - **File Detail Drawer**: Radar chart normalizing churn, bug ratio, complexity, authors, and recency ($0 \rightarrow 1$), paired with Gemini AI refactoring bullets.
+   - **Risk Treemap & Heatmap**: Zoomable, color-coded source directory treemap.
+   - **Bug-Fix Commit Timeline**: Weekly bug-fix frequency with a vertical marker at the 70/30 split.
+   - **Risk by Folder**: Horizontal bar chart of average risk per top-level module.
+   - **Histogram & Donut Charts**: Risk distribution and tier proportions.
+
+3. **Public Sharing & Developer Integrations**
+   - **Shareable Public Reports**: Generate read-only report URLs with short IDs (`/report/:id`) for sharing with teammates.
+   - **Dynamic Status Badges**: Embed SVG status badges (`GET /badge/{owner}/{repo}.svg`) directly into your GitHub README.
+   - **Instant Demo Mode**: Offline realistic repository sample simulation for zero-latency testing.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, Vite, Tailwind CSS, Recharts, Lucide Icons.
 - **Backend**: FastAPI (Python 3.10+), Pydantic v2, SQLAlchemy, Uvicorn, Httpx.
-- **Machine Learning**: `scikit-learn` (`RandomForestClassifier`), NumPy, Pandas.
-- **Database**: SQLite (built-in, seamless swappable to PostgreSQL via `DATABASE_URL` environment variable).
-- **Authentication**: JWT (JSON Web Tokens) with `bcrypt` password hashing.
-- **Data Pipeline**: GitHub REST API v3 commit mining, regex weak-supervision heuristics, language-agnostic cyclomatic complexity proxy.
+- **Machine Learning**: `scikit-learn` (`RandomForestClassifier`, `LogisticRegression`, `GradientBoostingClassifier`), NumPy, Pandas.
+- **AI Remediation**: Google Gemini AI (`google-generativeai`).
+- **Database**: SQLite (default for local development), PostgreSQL via `DATABASE_URL` for production.
 
 ---
 
-## Key Features
+## ⚙️ Environment Variables
 
-1. **Authentication & User Session**
-   - Secure email/password registration and login with JWT access tokens.
-   - Scan history tracking for signed-in developers.
-   - Guest scans permitted without mandatory sign-in.
+Create a `backend/.env` file (refer to `backend/.env.example`):
 
-2. **Repository Connector & Smart Token Handling**
-   - Paste any public GitHub URL (e.g. `https://github.com/pallets/flask` or `fastapi/fastapi`).
-   - Quick-pick sample presets for instant evaluations.
-   - **Optional Personal Access Token (PAT)** support: Unlocks GitHub's 5,000 req/hr tier (bumping up from the 60 req/hr unauthenticated limit).
-   - **Privacy First**: PATs are stored **only in ephemeral session memory** and are never saved to disk or the database.
+```bash
+# GitHub Personal Access Token (Raises API rate limits from 60 to 5,000 req/hr)
+GITHUB_TOKEN=your_github_token_here
 
-3. **Telemetry Mining & Feature Extraction Pipeline**
-   - Inspects up to 200 commits per repository.
-   - Identifies bug-fixing commits using the regex heuristic: `/\b(fix|bug|patch|error|issue|crash|defect|regression)\b/i`.
-   - Per-file aggregated metrics:
-     - `total_commits`: Touch frequency.
-     - `bug_fix_commits`: Historical defect involvement.
-     - `bug_ratio`: Proportion of commits modifying this file that were bug fixes.
-     - `lines_churn_avg`: Average lines added/deleted per commit.
-     - `unique_authors`: Developer dispersion and team handoff turnover.
-     - `days_since_modified`: Recency of code changes.
-     - `complexity_proxy`: Keyword-based branching density proxy (`if/for/while/case/switch/catch` divided by LOC).
+# Google Gemini API Key (For automated AI code fix remediation)
+GEMINI_API_KEY=your_gemini_api_key_here
 
-4. **Hybrid AI / Rule-Based Blending Engine**
-   - Trains a `RandomForestClassifier` with balanced class weights on historical file features.
-   - Computes a domain-heuristic fallback score (weighted formula of bug history, churn, complexity, and author count).
-   - **Adaptive Dynamic Blend**: Automatically balances ML score vs. heuristic score based on sample size $N$, preventing model degradation or overfitting on small repos.
-   - Generates human-readable "Top Contributing Factors" for code review decisions.
+# Database Connection (Default SQLite for local dev, PostgreSQL for production)
+DATABASE_URL=sqlite:///./bugradar.db
 
-5. **Modern SaaS Dashboard & Heatmap Visualizer**
-   - Summary KPI cards: Total files analyzed, High/Medium/Low risk counts, Average codebase risk.
-   - **Interactive Treemap / Heatmap**: Color-coded tiles (Emerald $\rightarrow$ Amber $\rightarrow$ Red) with live tooltips and click-to-inspect.
-   - **Sortable & Filterable Risk Table**: Real-time search, risk-level tabs, sort by any metric.
-   - **Expandable Factor Drawers**: Click any row to see why the AI flagged the file.
-   - **Report Export**: Instant export to CSV and JSON formats.
-   - **Dark / Light Mode Toggle**: Smooth theme switching.
+# JWT Secret Key
+SECRET_KEY=your_random_secret_key_here
+```
 
+---
 
+## 💻 Local Setup Instructions
+
+### 1. Backend Setup
+
+```bash
+cd backend
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+```
+Interactive API documentation will be available at `http://127.0.0.1:8000/docs`.
+
+### 2. Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open `http://localhost:5173` in your browser.
+
+### 3. Run Automated Pytest Suite
+
+```bash
+pytest backend/tests
+```
+
+---
+
+## 🔍 Methodology & Limitations
+
+1. **Temporal Splitting vs. Random K-Fold**: Codebases evolve chronologically. Standard random $K$-fold cross-validation introduces lookahead bias by using future commits to predict past bugs. BugRadar strictly uses temporal cutoff boundaries.
+2. **Class Imbalance**: Bug-prone modules are a natural minority in mature repositories. BugRadar mitigates majority-class collapse using inverse class-frequency sample weights.
+3. **Small-Sample Caveat**: For repositories with fewer than 30 total commits or fewer than 2 positive defect touches, statistical cross-validation folds exhibit high variance. BugRadar dynamically shifts weight to its Bayesian domain heuristic and displays an explicit `"Too few defect labels for reliable evaluation"` indicator.

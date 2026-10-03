@@ -1,152 +1,261 @@
 import React from 'react';
 import { 
   Radar, 
+  Sparkles, 
+  Cpu, 
+  Activity, 
+  BarChart2, 
   ArrowRight, 
-  Zap,
-  Link2,
-  Search,
-  BarChart3
+  CheckCircle2, 
+  Zap, 
+  Layers, 
+  Share2
 } from 'lucide-react';
 
-export default function LandingPage({ onStartScan, onOpenDemo, darkMode }) {
+export default function LandingPage({ onStartScan, onInstantDemo, darkMode }) {
   return (
-    <div className="space-y-16 py-4">
+    <div className="space-y-20 py-8">
       {/* Hero Section */}
-      <section className="relative overflow-hidden text-center max-w-5xl mx-auto px-4 pt-2 sm:pt-4 pb-6">
-        {/* Ambient background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-500/15 via-indigo-600/15 to-red-500/15 blur-3xl pointer-events-none -z-10 rounded-full" />
+      <div className="max-w-5xl mx-auto px-4 text-center space-y-8">
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+          <span>Next-Gen Machine Learning Defect Radar</span>
+        </div>
 
-        {/* Main Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] mb-5">
-          Know which files will <br className="hidden sm:inline" />
-          <span className="bg-gradient-to-r from-red-400 via-orange-400 to-amber-300 bg-clip-text text-transparent">
-            break before you ship
+        <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] ${
+          darkMode ? 'text-white' : 'text-gray-900'
+        }`}>
+          Predict Software Bugs{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400">
+            Before Production.
           </span>
         </h1>
 
-        <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto mb-8 leading-relaxed font-normal">
-          BugRadar mines git commit history, models code churn, and calculates cyclomatic complexity to predict bug-prone hotspots using machine learning and resilient heuristic fallback scoring.
+        <p className={`text-base sm:text-xl max-w-2xl mx-auto leading-relaxed ${
+          darkMode ? 'text-gray-400' : 'text-gray-600'
+        }`}>
+          BugRadar mines git commits, extracts churn & control-flow complexity, runs out-of-fold ML classifiers on a temporal split, and delivers AI-guided code fixes.
         </p>
 
-        {/* Action CTAs */}
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <button
             onClick={onStartScan}
-            className="flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold text-base shadow-xl shadow-cyan-500/25 transition-all hover:scale-105"
+            className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold text-base shadow-xl shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
           >
             <Radar className="w-5 h-5" />
-            <span>Connect & Scan Repository</span>
+            <span>Scan a Repository</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
-            onClick={onOpenDemo}
-            className={`flex items-center gap-2 px-6 py-3.5 rounded-xl border font-semibold text-base transition-all ${
-              darkMode
-                ? 'bg-gray-900 border-gray-700 text-gray-200 hover:bg-gray-800 hover:border-gray-600'
-                : 'bg-white border-gray-300 text-gray-800 hover:bg-gray-50'
+            onClick={onInstantDemo}
+            className={`w-full sm:w-auto px-7 py-4 rounded-2xl border font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 ${
+              darkMode 
+                ? 'bg-gray-900/90 border-gray-800 text-gray-200 hover:bg-gray-800' 
+                : 'bg-white border-gray-300 text-gray-800 hover:bg-gray-100 shadow-sm'
             }`}
           >
             <Zap className="w-4 h-4 text-amber-400" />
-            <span>Explore Live Demo Data</span>
+            <span>Instant Demo Run</span>
           </button>
         </div>
 
-        {/* Interactive Mock Preview Widget */}
-        <div className="mt-10 relative max-w-4xl mx-auto rounded-2xl border border-gray-800 bg-gray-950/90 shadow-2xl p-4 sm:p-6 text-left">
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-800">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              <span className="text-xs font-mono text-gray-400 ml-2">bugradar scan: expressjs/express (commit depth: 200)</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-cyan-400 font-mono">
-              <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              <span>AI Ensemble Active</span>
-            </div>
-          </div>
+        {/* Quick Highlights Row */}
+        <div className="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-gray-400">
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            No account or credit card needed
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+            Reduced lookahead bias (70/30 split)
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="w-4 h-4 text-purple-400" />
+            Out-of-fold ROC/PR evaluation
+          </span>
+        </div>
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
-            <div className="p-3.5 rounded-xl bg-red-950/30 border border-red-900/50">
-              <div className="text-red-400 font-bold flex items-center justify-between">
-                <span>src/router/index.js</span>
-                <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-300 text-[10px]">RISK: 91%</span>
-              </div>
-              <p className="text-gray-400 text-[11px] mt-1.5">14 bug fixes • 4 unique authors • high cyclomatic complexity</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-900/50">
-              <div className="text-amber-400 font-bold flex items-center justify-between">
-                <span>src/middleware/init.js</span>
-                <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px]">RISK: 58%</span>
-              </div>
-              <p className="text-gray-400 text-[11px] mt-1.5">5 bug fixes • churn 45 lines/commit • modified 12d ago</p>
+      {/* Live Preview / Stats Card */}
+      <div className="max-w-6xl mx-auto px-4">
+        <div className={`p-6 sm:p-8 rounded-3xl border shadow-2xl relative overflow-hidden ${
+          darkMode ? 'bg-gray-900/90 border-gray-800' : 'bg-white border-gray-200'
+        }`}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+            <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-950/60 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+              <div className="text-[11px] font-bold uppercase text-gray-500">Classification Models</div>
+              <div className="text-2xl font-black text-cyan-400 mt-1">4 Ensembles</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">RF, LR, GB & Churn Baseline</div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-900/50">
-              <div className="text-emerald-400 font-bold flex items-center justify-between">
-                <span>src/utils/status.js</span>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">RISK: 12%</span>
-              </div>
-              <p className="text-gray-400 text-[11px] mt-1.5">0 bug fixes • low branching complexity • 1 author</p>
+            <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-950/60 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+              <div className="text-[11px] font-bold uppercase text-gray-500">Evaluation Rigor</div>
+              <div className="text-2xl font-black text-purple-400 mt-1">5-Fold OOF</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">Stratified cross-validation</div>
+            </div>
+
+            <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-950/60 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+              <div className="text-[11px] font-bold uppercase text-gray-500">AI Remediation</div>
+              <div className="text-2xl font-black text-emerald-400 mt-1">Gemini AI</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">Automated code fix bullets</div>
+            </div>
+
+            <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-gray-950/60 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+              <div className="text-[11px] font-bold uppercase text-gray-500">Public Audit Badge</div>
+              <div className="text-2xl font-black text-amber-400 mt-1">SVG Badges</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">GitHub README integration</div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* 3-Box Workflow Section */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            How BugRadar Predicts Code Failure Hotspots
+      {/* 3-Step "How It Works" Pipeline */}
+      <div className="max-w-6xl mx-auto px-4 space-y-12">
+        <div className="text-center space-y-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">Under The Hood</div>
+          <h2 className={`text-3xl sm:text-4xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            How BugRadar Predicts Defect Hotspots
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto mt-2">
-            Multi-stage analysis combines commit telemetry, heuristic proxy parsing, and machine learning models.
+          <p className={`text-xs sm:text-sm max-w-xl mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            A 3-step pipeline that mines commit history, trains and evaluates models on out-of-fold data, and explains every prediction.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className={`p-6 rounded-2xl border transition-all ${
-            darkMode ? 'bg-gray-900/50 border-gray-800 hover:border-cyan-500/40' : 'bg-white border-gray-200 hover:border-cyan-500/40'
+          {/* Step 1 */}
+          <div className={`p-6 sm:p-8 rounded-3xl border flex flex-col justify-between space-y-4 ${
+            darkMode ? 'bg-gray-900/80 border-gray-800' : 'bg-white border-gray-200 shadow-sm'
           }`}>
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4">
-              <Link2 className="w-6 h-6" />
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-black text-lg">
+                01
+              </div>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Temporal Git Mining
+              </h3>
+              <p className={`text-xs leading-relaxed ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                BugRadar splits commit history into a 70% historical window and a 30% future window. Features (churn, complexity, recency, author dispersion) are computed only from the historical window, and bug-fix commits in the future window provide the labels. This reduces lookahead bias.
+              </p>
             </div>
-            <h3 className="text-lg font-bold mb-2">1. Paste Your Repo Link</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Enter any public GitHub repository URL. BugRadar pulls up to 200 commits deep to start the scan.
+            <div className="pt-2 text-xs font-mono text-cyan-400 flex items-center gap-1">
+              <span>Reduced lookahead bias</span>
+            </div>
+          </div>
+
+          {/* Step 2 */}
+          <div className={`p-6 sm:p-8 rounded-3xl border flex flex-col justify-between space-y-4 ${
+            darkMode ? 'bg-gray-900/80 border-gray-800' : 'bg-white border-gray-200 shadow-sm'
+          }`}>
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center font-black text-lg">
+                02
+              </div>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Balanced ML Ensembling
+              </h3>
+              <p className={`text-xs leading-relaxed ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Trains Random Forest, Logistic Regression, and Gradient Boosting with class balancing. Models are evaluated with out-of-fold cross-validation and compared against a naive churn baseline.
+              </p>
+            </div>
+            <div className="pt-2 text-xs font-mono text-purple-400 flex items-center gap-1">
+              <span>Out-of-fold ROC & PR curves</span>
+            </div>
+          </div>
+
+          {/* Step 3 */}
+          <div className={`p-6 sm:p-8 rounded-3xl border flex flex-col justify-between space-y-4 ${
+            darkMode ? 'bg-gray-900/80 border-gray-800' : 'bg-white border-gray-200 shadow-sm'
+          }`}>
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-black text-lg">
+                03
+              </div>
+              <h3 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Explainability & Remediation
+              </h3>
+              <p className={`text-xs leading-relaxed ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Shows the top feature-importance-weighted drivers for each file, renders an interactive risk treemap, and generates Gemini-powered refactoring advice with concrete steps for the riskiest files.
+              </p>
+            </div>
+            <div className="pt-2 text-xs font-mono text-emerald-400 flex items-center gap-1">
+              <span>Actionable fix guidance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Feature Highlights Grid */}
+      <div className="max-w-6xl mx-auto px-4 space-y-12">
+        <div className="text-center space-y-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-indigo-400">Complete Toolkit</div>
+          <h2 className={`text-3xl sm:text-4xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Built for Developers & Engineering Teams
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={`p-6 rounded-3xl border space-y-3 ${darkMode ? 'bg-gray-900/60 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+              <Activity className="w-5 h-5" />
+            </div>
+            <h4 className="font-bold text-base">Scatter Plot & Treemaps</h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Explore churn vs. complexity across your codebase with interactive zoomable treemaps and scatter clusters.
             </p>
           </div>
 
-          {/* Card 2 */}
-          <div className={`p-6 rounded-2xl border transition-all ${
-            darkMode ? 'bg-gray-900/50 border-gray-800 hover:border-indigo-500/40' : 'bg-white border-gray-200 hover:border-indigo-500/40'
-          }`}>
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4">
-              <Search className="w-6 h-6" />
+          <div className={`p-6 rounded-3xl border space-y-3 ${darkMode ? 'bg-gray-900/60 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+              <Cpu className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold mb-2">2. We Scan Every File</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Each file is analyzed for bug-fix history, code churn, complexity, and author activity to build a risk profile.
+            <h4 className="font-bold text-base">Multi-Model Ensembles</h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Benchmark Random Forest, Logistic Regression, and Gradient Boosting against naive churn-based baselines.
             </p>
           </div>
 
-          {/* Card 3 */}
-          <div className={`p-6 rounded-2xl border transition-all ${
-            darkMode ? 'bg-gray-900/50 border-gray-800 hover:border-purple-500/40' : 'bg-white border-gray-200 hover:border-purple-500/40'
-          }`}>
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-4">
-              <BarChart3 className="w-6 h-6" />
+          <div className={`p-6 rounded-3xl border space-y-3 ${darkMode ? 'bg-gray-900/60 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+              <BarChart2 className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold mb-2">3. Get Instant Risk Scores</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              See every file ranked by risk, with clear reasons behind each score — so you know exactly where to focus testing.
+            <h4 className="font-bold text-base">Out-of-Fold Model Rigor</h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              View out-of-fold ROC curves, precision-recall curves, confusion matrix heatmaps, and CV statistics.
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-3xl border space-y-3 ${darkMode ? 'bg-gray-900/60 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h4 className="font-bold text-base">Gemini AI Fix Remediation</h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Receive structured, file-specific code refactoring instructions with clear what-to-do bullets.
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-3xl border space-y-3 ${darkMode ? 'bg-gray-900/60 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+              <Share2 className="w-5 h-5" />
+            </div>
+            <h4 className="font-bold text-base">Shareable Public Reports</h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Generate read-only report URLs with short IDs to share defect insights with teammates and stakeholders.
+            </p>
+          </div>
+
+          <div className={`p-6 rounded-3xl border space-y-3 ${darkMode ? 'bg-gray-900/60 border-gray-800' : 'bg-white border-gray-200'}`}>
+            <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-400 flex items-center justify-center">
+              <Layers className="w-5 h-5" />
+            </div>
+            <h4 className="font-bold text-base">Dynamic README Badges</h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Embed dynamic SVG status badges in your repository README to signal ongoing code health and defect risk.
             </p>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

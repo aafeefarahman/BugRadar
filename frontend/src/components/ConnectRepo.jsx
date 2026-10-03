@@ -2,16 +2,11 @@ import React, { useState } from 'react';
 import { 
   Radar, 
   AlertCircle, 
-  Sparkles, 
-  Check, 
-  Info, 
-  ExternalLink, 
   Zap, 
-  Layers, 
   Clock 
 } from 'lucide-react';
 import GithubIcon from './GithubIcon';
-import { analyzeRepository } from '../api';
+import { analyzeRepository, formatErrorDetail } from '../api';
 
 const POPULAR_REPOS = [
   { label: "Flask (Python)", url: "https://github.com/pallets/flask", commits: 150 },
@@ -60,7 +55,6 @@ export default function ConnectRepo({
     try {
       const result = await analyzeRepository(
         targetUrl, 
-        null, 
         useSample, 
         maxCommits
       );
@@ -69,11 +63,18 @@ export default function ConnectRepo({
       onAnalysisComplete(result);
     } catch (err) {
       clearInterval(interval);
-      setError(err.message || "Failed to analyze repository. Verify public accessibility.");
+      const errString = formatErrorDetail(err?.detail || err?.message || err, "Failed to analyze repository. Verify public accessibility.");
+      setError(errString);
     } finally {
       setLoading(false);
     }
   };
+
+  const isRateLimitError = error && (
+    error.toLowerCase().includes('rate limit') || 
+    error.includes('429') || 
+    error.includes('60 req/hr')
+  );
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -121,12 +122,32 @@ export default function ConnectRepo({
           /* Input Form */
           <form onSubmit={(e) => handleScan(e)} className="space-y-6">
             {error && (
-              <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 text-xs sm:text-sm flex items-start gap-3 leading-relaxed">
-                <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-500" />
-                <div className="space-y-1">
-                  <div className="font-bold">Analysis Error</div>
-                  <div>{error}</div>
+              <div className={`p-4 rounded-2xl border text-xs sm:text-sm flex flex-col sm:flex-row items-start justify-between gap-3 leading-relaxed ${
+                isRateLimitError 
+                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-300' 
+                  : 'bg-red-500/10 border-red-500/30 text-red-500'
+              }`}>
+                <div className="flex items-start gap-3">
+                  <AlertCircle className={`w-5 h-5 shrink-0 mt-0.5 ${isRateLimitError ? 'text-amber-400' : 'text-red-500'}`} />
+                  <div className="space-y-1">
+                    <div className="font-bold">{isRateLimitError ? 'GitHub Rate Limit Reached' : 'Analysis Error'}</div>
+                    <div>
+                      {isRateLimitError 
+                        ? 'GitHub rate limit reached. Please try again later or run the instant demo.' 
+                        : error}
+                    </div>
+                  </div>
                 </div>
+                {isRateLimitError && (
+                  <button
+                    type="button"
+                    onClick={(e) => handleScan(e, null, true)}
+                    className="shrink-0 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow transition-all flex items-center gap-1.5 self-end sm:self-auto"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Try Sample Demo</span>
+                  </button>
+                )}
               </div>
             )}
 

@@ -3,12 +3,43 @@ import Navbar from './components/Navbar';
 import LandingPage from './components/LandingPage';
 import ConnectRepo from './components/ConnectRepo';
 import Dashboard from './components/Dashboard';
-import { getQuickSampleAnalysis } from './api';
+import ModelPerformance from './components/ModelPerformance';
+import SharedReportView from './components/SharedReportView';
+import ErrorBoundary from './components/ErrorBoundary';
+import Toast from './components/Toast';
+import { getQuickSampleAnalysis, analyzeRepository } from './api';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('landing'); // 'landing', 'connect', 'dashboard'
+  const [activeTab, setActiveTab] = useState('landing');
   const [darkMode, setDarkMode] = useState(true);
   const [analysisData, setAnalysisData] = useState(null);
+  const [toasts, setToasts] = useState([]);
+  const [sharedReportId, setSharedReportId] = useState(null);
+
+  // Check URL on startup for /report/:id
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/report/')) {
+      const id = path.replace('/report/', '').replace(/\/$/, '');
+      if (id) {
+        setSharedReportId(id);
+        setActiveTab('report');
+      }
+    }
+  }, []);
+
+  // Toast helper
+  const showToast = (message, type = 'info') => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4500);
+  };
+
+  const dismissToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
 
   // Update theme class on HTML element
   useEffect(() => {
@@ -24,6 +55,7 @@ export default function App() {
   const handleAnalysisComplete = (data) => {
     setAnalysisData(data);
     setActiveTab('dashboard');
+    showToast(`Scan complete for ${data.repo_name}!`, 'success');
   };
 
   const handleOpenDemo = async () => {
@@ -31,9 +63,23 @@ export default function App() {
       const data = await getQuickSampleAnalysis();
       setAnalysisData(data);
       setActiveTab('dashboard');
+      showToast('Loaded instant demo analysis sample.', 'success');
     } catch (e) {
       setActiveTab('connect');
     }
+  };
+
+  const handleViewModelPerformance = async () => {
+    if (!analysisData) {
+      try {
+        const data = await getQuickSampleAnalysis();
+        setAnalysisData(data);
+      } catch (e) {
+        setActiveTab('connect');
+        return;
+      }
+    }
+    setActiveTab('model-performance');
   };
 
   return (
@@ -44,36 +90,65 @@ export default function App() {
         {/* Navbar Header */}
         <Navbar
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
+          setActiveTab={(tab) => {
+            if (tab === 'model-performance' && !analysisData) {
+              handleViewModelPerformance();
+            } else {
+              setActiveTab(tab);
+            }
+          }}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
         />
 
-        {/* Main Content Router */}
+        {/* Global Toast Container */}
+        <Toast toasts={toasts} onDismiss={dismissToast} darkMode={darkMode} />
+
+        {/* Main Content with Error Boundary */}
         <main className="pb-16">
-          {activeTab === 'landing' && (
-            <LandingPage
-              onStartScan={() => setActiveTab('connect')}
-              onOpenDemo={handleOpenDemo}
-              darkMode={darkMode}
-            />
-          )}
+          <ErrorBoundary>
+            {activeTab === 'landing' && (
+              <LandingPage
+                onStartScan={() => setActiveTab('connect')}
+                onInstantDemo={handleOpenDemo}
+                darkMode={darkMode}
+              />
+            )}
 
-          {activeTab === 'connect' && (
-            <ConnectRepo
-              onAnalysisComplete={handleAnalysisComplete}
-              darkMode={darkMode}
-            />
-          )}
+            {activeTab === 'connect' && (
+              <ConnectRepo
+                onAnalysisComplete={handleAnalysisComplete}
+                darkMode={darkMode}
+              />
+            )}
 
-          {activeTab === 'dashboard' && (
-            <Dashboard
-              analysisData={analysisData}
-              onAnalysisComplete={handleAnalysisComplete}
-              onNewScan={() => setActiveTab('connect')}
-              darkMode={darkMode}
-            />
-          )}
+            {activeTab === 'dashboard' && (
+              <Dashboard
+                analysisData={analysisData}
+                onAnalysisComplete={handleAnalysisComplete}
+                onNewScan={() => setActiveTab('connect')}
+                onViewModelPerformance={() => setActiveTab('model-performance')}
+                darkMode={darkMode}
+                showToast={showToast}
+              />
+            )}
+
+            {activeTab === 'model-performance' && (
+              <ModelPerformance
+                analysisData={analysisData}
+                darkMode={darkMode}
+                onBackToRadar={() => setActiveTab('dashboard')}
+              />
+            )}
+
+            {activeTab === 'report' && sharedReportId && (
+              <SharedReportView
+                reportId={sharedReportId}
+                onBackHome={() => setActiveTab('landing')}
+                darkMode={darkMode}
+              />
+            )}
+          </ErrorBoundary>
         </main>
       </div>
 
@@ -97,3 +172,4 @@ export default function App() {
     </div>
   );
 }
+
