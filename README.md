@@ -2,37 +2,6 @@
 
 BugRadar is an open-source, full-stack predictive software quality platform. It mines Git repositories, extracts code churn and cyclomatic complexity proxies, applies temporal splits to reduce lookahead bias, trains balanced multi-model machine learning ensembles, and delivers Gemini AI-powered actionable remediation guidance.
 
--
-        C --> D1[Code Churn: Additions + Deletions]
-        C --> D2[Cyclomatic Complexity Proxy: Control-Flow Density]
-        C --> D3[Author Dispersion & Developer Turnover]
-        C --> D4[Touch Frequency & Recency]
-    end
-
-    subgraph Label Extraction [Future 30% Window]
-        C --> E1[Weak Supervision Regex: fix|bug|patch|defect]
-        E1 --> E2[Ground Truth Defect Labels y in 0, 1]
-    end
-
-    Feature Extraction & Label Extraction --> F[Balanced ML Ensemble Training]
-    
-    subgraph ML Rigor & Validation
-        F --> G1[Random Forest Classifier]
-        F --> G2[Logistic Regression Pipeline]
-        F --> G3[Gradient Boosting Classifier]
-        F --> G4[Naive Churn-Only Baseline]
-        G1 & G2 & G3 & G4 --> H[Stratified 5-Fold Out-of-Fold Cross Validation]
-        H --> I[ROC Curves, PR Curves & Confusion Matrix]
-    end
-
-    F --> J[Adaptive Bayesian Risk Blender]
-    J --> K[Interactive Live Radar, Treemap & Scatter Chart]
-    J --> L[Google Gemini AI Code Remediation Engine]
-    J --> M[Public Read-Only Shareable Reports & Status Badges]
-```
-
----
-
 ## 🚀 Key Features
 
 1. **Machine Learning Rigor (Reduced Lookahead Bias)**
