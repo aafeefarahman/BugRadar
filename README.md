@@ -35,7 +35,7 @@ BugRadar is an open-source, full-stack predictive software quality platform. It 
 
 ---
 
-## 🔍 Methodology & Limitations
+## Methodology & Limitations
 
 1. **Temporal Splitting vs. Random K-Fold**: Codebases evolve chronologically. Standard random $K$-fold cross-validation introduces lookahead bias by using future commits to predict past bugs. BugRadar strictly uses temporal cutoff boundaries.
 2. **Class Imbalance**: Bug-prone modules are a natural minority in mature repositories. BugRadar mitigates majority-class collapse using inverse class-frequency sample weights.
